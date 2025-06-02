@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expressions Explorer</title>
+  <style>
+    /* RESET & BASE STYLES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    header, footer {
+      text-align: center;
+      background: #fff;
+      padding: 15px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    /* TABS */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #007BFF;
+      margin-bottom: 20px;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 10px;
+      background: none;
+      border: none;
+      border-bottom: 4px solid transparent;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #007BFF;
+      transition: all 0.3s;
+    }
+    .tabs button.active {
+      border-bottom-color: #007BFF;
+      font-weight: bold;
+    }
+    /* TAB CONTENT */
+    .tabcontent {
+      display: none;
+    }
+    .tabcontent.active {
+      display: block;
+    }
+    /* SECTIONS */
+    section {
+      margin-bottom: 20px;
+    }
+    section p, section ul {
+      margin-bottom: 10px;
+    }
+    section ul li {
+      margin-left: 20px;
+      list-style: disc;
+    }
+    /* CALCULATOR & FORMS */
+    .calc {
+      margin: 15px 0;
+      text-align: center;
+    }
+    .calc label {
+      display: inline-block;
+      width: 180px;
+      font-weight: bold;
+    }
+    .calc input, .calc select, .calc textarea {
+      padding: 5px;
+      width: 100px;
+      margin-right: 10px;
+    }
+    .btn {
+      padding: 7px 15px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      background: #e9f2f9;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+    /* CANVAS */
+    canvas {
+      display: block;
+      margin: 20px auto;
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #fff;
+      margin-top: 20px;
+      box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Expressions Explorer</h1>
+  </header>
+  <div class="container">
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <button class="tablinks active" onclick="openTab(event, 'info')" id="defaultTab">Info</button>
+      <button class="tablinks" onclick="openTab(event, 'evaluator')">Evaluator</button>
+      <button class="tablinks" onclick="openTab(event, 'graphing')">Graphing</button>
+    </div>
+
+    <!-- Info Tab -->
+    <div id="info" class="tabcontent active">
+      <h2>About Expressions</h2>
+      <section>
+        <p>An expression is a combination of numbers, variables, and operators that represents a value. Examples include arithmetic expressions like <em>3 + 4 × 5</em>, and algebraic expressions such as <em>2x + 3</em>.</p>
+      </section>
+      <section>
+        <p>You can use standard operator precedence, and also call JavaScript’s Math functions (for example, <em>Math.sin(Math.PI/2)</em> or <em>Math.sqrt(16)</em>).</p>
+      </section>
+      <section>
+        <p>This app allows you to evaluate expressions directly and even graph functions of one variable for a visual understanding.</p>
+      </section>
+    </div>
+
+    <!-- Evaluator Tab -->
+    <div id="evaluator" class="tabcontent">
+      <h2>Expression Evaluator</h2>
+      <div class="calc">
+        <label for="exprInput">Enter Expression:</label>
+        <input type="text" id="exprInput" placeholder="e.g., 3 + 4*2" style="width:250px;">
+        <button class="btn" onclick="evaluateExpression()">Evaluate</button>
+      </div>
+      <div id="evalResult" class="result"></div>
+    </div>
+
+    <!-- Graphing Tab -->
+    <div id="graphing" class="tabcontent">
+      <h2>Graph Function</h2>
+      <div class="calc">
+        <label for="graphExpr">f(x) =</label>
+        <input type="text" id="graphExpr" placeholder="e.g., Math.sin(x) + x*x" style="width:300px;">
+        <button class="btn" onclick="graphFunction()">Graph Function</button>
+      </div>
+      <canvas id="graphCanvas" width="600" height="400"></canvas>
+      <div id="graphResult" class="result"></div>
+    </div>
+  </div>
+  
+  <footer>
+    Bocaletto Luca
+  </footer>
+  
+  <script>
+    "use strict";
+    
+    // TAB NAVIGATION
+    function openTab(evt, tabName) {
+      const tabcontents = document.getElementsByClassName("tabcontent");
+      for (let i = 0; i < tabcontents.length; i++) {
+        tabcontents[i].style.display = "none";
+        tabcontents[i].classList.remove("active");
+      }
+      const tablinks = document.getElementsByClassName("tablinks");
+      for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+      }
+      document.getElementById(tabName).style.display = "block";
+      document.getElementById(tabName).classList.add("active");
+      evt.currentTarget.classList.add("active");
+    }
+    document.getElementById("defaultTab").click();
+    
+    /* ----- EXPRESSION EVALUATOR ----- */
+    function evaluateExpression() {
+      const expr = document.getElementById("exprInput").value;
+      const resultDiv = document.getElementById("evalResult");
+      try {
+        // Use Function constructor to safely evaluate the expression.
+        let result = Function('"use strict"; return (' + expr + ')')();
+        resultDiv.innerHTML = `<p>Result: ${result}</p>`;
+      } catch(e) {
+        resultDiv.innerHTML = `<p>Error in expression: ${e.message}</p>`;
+      }
+    }
+    
+    /* ----- GRAPHING FUNCTIONS ----- */
+    function graphFunction() {
+      const exprStr = document.getElementById("graphExpr").value;
+      const resultDiv = document.getElementById("graphResult");
+      const canvas = document.getElementById("graphCanvas");
+      const ctx = canvas.getContext("2d");
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Create a function f(x) from the input.
+      try {
+        const f = new Function("x", `"use strict"; return (${exprStr});`);
+        
+        // Set graph range.
+        const xMin = -10, xMax = 10;
+        let yMin = Infinity, yMax = -Infinity;
+        const samples = 1000;
+        let pts = [];
+        
+        // Sample the function over [xMin, xMax].
+        for (let i = 0; i <= samples; i++){
+          let x = xMin + (xMax - xMin) * i / samples;
+          let y = f(x);
+          pts.push({x, y});
+          if (y < yMin) yMin = y;
+          if (y > yMax) yMax = y;
+        }
+        
+        // If function is constant, adjust yMin and yMax.
+        if (yMin === yMax) { yMin -= 1; yMax += 1; }
+        
+        // Transform function: Map x in [xMin, xMax] to [margin, canvas.width-margin]
+        // and y in [yMin, yMax] to [canvas.height-margin, margin] (inverted).
+        const margin = 40;
+        const plotWidth = canvas.width - 2 * margin;
+        const plotHeight = canvas.height - 2 * margin;
+        function transform(pt) {
+          const X = margin + ((pt.x - xMin) / (xMax - xMin)) * plotWidth;
+          const Y = canvas.height - margin - ((pt.y - yMin) / (yMax - yMin)) * plotHeight;
+          return {X, Y};
+        }
+        
+        // Draw axes.
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 1;
+        // x-axis (y=0 if in range)
+        if (yMin <= 0 && yMax >= 0) {
+          let p1 = transform({x: xMin, y: 0});
+          let p2 = transform({x: xMax, y: 0});
+          ctx.beginPath();
+          ctx.moveTo(p1.X, p1.Y);
+          ctx.lineTo(p2.X, p2.Y);
+          ctx.stroke();
+        }
+        // y-axis (x=0 if in range)
+        if (xMin <= 0 && xMax >= 0) {
+          let p1 = transform({x: 0, y: yMin});
+          let p2 = transform({x: 0, y: yMax});
+          ctx.beginPath();
+          ctx.moveTo(p1.X, p1.Y);
+          ctx.lineTo(p2.X, p2.Y);
+          ctx.stroke();
+        }
+        
+        // Plot the function.
+        ctx.strokeStyle = "#007BFF";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < pts.length; i++){
+          let {X, Y} = transform(pts[i]);
+          if (i === 0) ctx.moveTo(X, Y);
+          else ctx.lineTo(X, Y);
+        }
+        ctx.stroke();
+        
+        ctx.fillStyle = "#000";
+        ctx.font = "12px Arial";
+        ctx.fillText(`f(x) = ${exprStr}`, margin + 10, margin - 10);
+        resultDiv.innerHTML = `<p>Graph of f(x)=${exprStr} for x ∈ [${xMin}, ${xMax}]</p>`;
+      } catch(e) {
+        resultDiv.innerHTML = `<p>Error in function expression: ${e.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
