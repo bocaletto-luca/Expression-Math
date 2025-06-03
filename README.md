@@ -3,6 +3,7 @@
 
 🚀 **Expression-Math** is an interactive web application designed to **evaluate and visualize mathematical expressions dynamically**. The app provides an intuitive interface for users to input **algebraic expressions**, see their **step-by-step simplification**, and graph them when applicable. 🧮  
 
+[![Test Online](https://img.shields.io/badge/Test%20Online-Click%20Here-brightgreen?style=for-the-badge)](https://bocaletto-luca.github.io/Expression-Math/)
 ---
 
 ## 🏆 Features  
